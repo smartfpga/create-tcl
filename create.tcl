@@ -1,4 +1,4 @@
-#****************************************************************************************
+#******************************************************************************************
 # Vivado Projekt Erzeugungsscript 
 # Zusammengestellt von Dmitry Eliseev auf der Basis von Greg's Script. 
 # Das Original ist hier zu finden:
@@ -8,8 +8,7 @@
 #    /src  <-- für eure *.hdl Dateien
 #    /proj_dir <-- dieses wird als Projektsverzeichnis von Vivado wahrgenommen
 #    /constraints <-- hier bitte alle constraints speichern
-# Das Script für die Erzeugung des Blockdesigns (Dateiname: bd.tcl) muss sich
-# auch im root-Verzeichnis befinden 
+# Das Script für die Erzeugung des Blockdesigns muss sich auch im root-Verzeichnis befinden 
 #
 # Eure Schritte zum Erfolg:
 # 1. Verzeichnisse wie oben angegeben vorbereiten
@@ -19,8 +18,8 @@
 # 5. In dem bd-Script die Zuweisung der Variabel str_bd_folder auskommentieren
 #
 # Updates:
-# 11. Dezember 2015 - Erzeugt Rev 1.0  
-#****************************************************************************************
+# 11. Dezember 2015 - Erzeugt Rev 1.0 
+#******************************************************************************************
 
 set proj_name "MusterKrokodil"
 set root_dir {c:/Projects/MusterKrokodilRoot}

@@ -5,33 +5,42 @@
 # http://forums.xilinx.com/t5/Design-Entry/Vivado-and-version-control/td-p/347941/page/2
 # Das root-Verzeichnis muss die folgenden Unterverzeichnisse beinhalten:
 # Achtung: das ist nicht das Project-Verzeichnis für VIVADO.
-#    /src  <-- für eure *.hdl Dateien
-#    /proj_dir <-- dieses wird als Projektsverzeichnis von Vivado wahrgenommen
-#    /constraints <-- hier bitte alle constraints speichern
+#   /src  <-- für eure *.hdl Dateien
+#   /proj_dir <-- dieses wird als Projektsverzeichnis von Vivado wahrgenommen
+#   /constraints <-- hier bitte alle constraints speichern
+#	/sim <-- hier die Simulationsdateien (aus den wird der "sim_1" Dateisatz generiert)
 # Das Script für die Erzeugung des Blockdesigns (Dateiname: bd.tcl) muss sich
 # auch im root-Verzeichnis befinden 
 #
-# Eure Schritte zum Erfolg:
-# 1. Verzeichnisse wie oben angegeben vorbereiten
-# 2. Projekt Name (proj_name) ändern
-# 3. Pfad zum root-Verzeichnis (root_dir) modifizieren. 
-# 4. Chip-Modell und, falls vorhanden, die Entwicklungsplatine angeben 
-# 5. In dem bd-Script die Zuweisung der Variabel str_bd_folder auskommentieren
+# Die wichtigen Schritte zum erfolgreichen Aufbau Ihres Projektes:
+# 1. Unterverzeichnisse wie oben angegeben vorbereiten
+# 2. Projekt Name (die Variabel "proj_name") unten ändern
+# 3. Pfad zum root-Verzeichnis (root_dir) modifizieren 
+# 4. Prüfen, dass das Blockdesign-Skript den Namen "bd.tcl" hat.  Ggf. umbenennen.
+# 5. Chip-Modell und, falls vorhanden, die Entwicklungsplatine angeben 
+# 6. !!! In dem aus Vivado exportierten bd-Script die Zuweisung der 
+#    Variabel str_bd_folder auskommentieren
+# 7. In der Vivado-console zu dem vorbereiteten root Verzeichnis 
+#    übergehen und "source create.tcl" eintippen
 #
 # Updates:
-# 11. Dezember 2015 - Erzeugt Rev 1.0  
+# Rev 1.0 		11. Dezember 2015 - Erzeugt   
+# Rev 1.1		25. Februar 2016 - Simulationsdateien werden 
+#									vom Script zum Project hinzugefügt
 #****************************************************************************************
 
-set proj_name "MusterKrokodil"
-set root_dir {c:/Projects/MusterKrokodilRoot}
+set proj_name "IhrProjektName"
+set root_dir {c:/Projects/RootFolderName}
 
 set proj_dir $root_dir/proj_dir
 set src_dir $root_dir/src
 set ip_dir $root_dir/ip
 set lib_dir $root_dir/lib
 set constr_dir $root_dir/constraints
+set sim_dir $root_dir/sim
 
-# !!! Diese Variabel wird später bei der Erstellung des Blockdesigns benutzt
+# !!! Diese Variabel wird später vom Blockdesign-Script benutzt. 
+# In dem aus Vivado exportierten BD-Script muss diese Variabel auskommentiert werden!!!
 set str_bd_folder $proj_dir/bd
 
 # Create project
@@ -61,9 +70,15 @@ if {[llength $file_list] != 0} {
 }
 
 
-# foreach subdir [glob -type d $ip_dir/*] {
-# import_files [glob $subdir/*.xci]
-# }
+# Kopieren der Simulationsdateien. Dateisatz 'sim_1' 
+set file_list [glob -nocomplain "$sim_dir/*"]
+if {[llength $file_list] != 0} {
+	add_files -fileset sim_1 $sim_dir
+} else {
+	puts "$sim_dir beinhaltet keine Dateien"
+}
+
+
 
 set file_list [glob -nocomplain "$constr_dir/*"]
 if {[llength $file_list] != 0} {
@@ -72,14 +87,8 @@ if {[llength $file_list] != 0} {
 	puts "$constr_dir beinhaltet keine Dateien"
 }
 
-# Add custom IP repository
-# set obj [get_filesets sources_1]
-# set_property "ip_repo_paths" $lib_dir $obj
-# update_ip_catalog
-
 
 # Erzeugung des Block-Designs
-
 source $root_dir/bd.tcl
 
 # Generate the wrapper

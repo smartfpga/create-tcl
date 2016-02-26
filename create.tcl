@@ -1,7 +1,7 @@
 #****************************************************************************************
 # Vivado Projekt Erzeugungsscript 
 # Zusammengestellt von Dmitry Eliseev auf der Basis von Greg's Script. 
-# Das Original ist hier zu finden:
+# Die ursprüngliche Datei ist hier zu finden:
 # http://forums.xilinx.com/t5/Design-Entry/Vivado-and-version-control/td-p/347941/page/2
 # Das root-Verzeichnis muss die folgenden Unterverzeichnisse beinhalten:
 # Achtung: das ist nicht das Project-Verzeichnis für VIVADO.
@@ -26,7 +26,7 @@
 # Updates:
 # Rev 1.0 		11. Dezember 2015 - Erzeugt   
 # Rev 1.1		25. Februar 2016 - Simulationsdateien werden 
-#									vom Script zum Project hinzugefügt
+#                   vom Script zum Project hinzugefügt
 #****************************************************************************************
 
 set proj_name "IhrProjektName"
@@ -69,7 +69,6 @@ if {[llength $file_list] != 0} {
 	puts "$src_dir beinhaltet keine Dateien"
 }
 
-
 # Kopieren der Simulationsdateien. Dateisatz 'sim_1' 
 set file_list [glob -nocomplain "$sim_dir/*"]
 if {[llength $file_list] != 0} {
@@ -78,15 +77,12 @@ if {[llength $file_list] != 0} {
 	puts "$sim_dir beinhaltet keine Dateien"
 }
 
-
-
 set file_list [glob -nocomplain "$constr_dir/*"]
 if {[llength $file_list] != 0} {
 	add_files -fileset constrs_1 $constr_dir
 } else {
 	puts "$constr_dir beinhaltet keine Dateien"
 }
-
 
 # Erzeugung des Block-Designs
 source $root_dir/bd.tcl

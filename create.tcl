@@ -6,7 +6,8 @@
 # Das root-Verzeichnis muss die folgenden Unterverzeichnisse beinhalten:
 # Achtung: das ist nicht das Project-Verzeichnis für VIVADO.
 #   /src  <-- für eure *.hdl Dateien
-#   /proj_dir <-- dieses wird als Projektsverzeichnis von Vivado wahrgenommen
+#   /ip_repo <-- der Ordner für die custom IP-cores 
+#   /proj_dir <-- dieses wird zum Vivado-Projektsverzeichnis
 #   /constraints <-- hier bitte alle constraints speichern
 #	/sim <-- hier die Simulationsdateien (aus den wird der "sim_1" Dateisatz generiert)
 # Das Script für die Erzeugung des Blockdesigns (Dateiname: bd.tcl) muss sich
@@ -17,24 +18,24 @@
 # 2. Projekt Name (die Variabel "proj_name") unten ändern
 # 3. Pfad zum root-Verzeichnis (root_dir) modifizieren 
 # 4. Prüfen, dass das Blockdesign-Skript den Namen "bd.tcl" hat.  Ggf. umbenennen.
-# 5. Chip-Modell und, falls vorhanden, die Entwicklungsplatine angeben 
-# 6. !!! In dem aus Vivado exportierten bd-Script die Zuweisung der 
-#    Variabel str_bd_folder auskommentieren
-# 7. In der Vivado-console zu dem vorbereiteten root Verzeichnis 
+# 5. Chip-Modell angeben: set_property "part" "Dein Chip-Modell" 
+# 6. (Optional): Die Entwicklungsplatine (falls vorhanden) entsprechend ändern: siehe set_property "board_part"
+# 7. In dem aus Vivado exportierten bd-Script die Zuweisung der Variabel str_bd_folder auskommentieren
+# 8. In der Vivado-console zu dem vorbereiteten root Verzeichnis 
 #    übergehen und "source create.tcl" eintippen
 #
 # Updates:
 # Rev 1.0 		11. Dezember 2015 - Erzeugt   
 # Rev 1.1		25. Februar 2016 - Simulationsdateien werden 
 #                   vom Script zum Project hinzugefügt
+# Rev 1.2       16. Oktober 2022 - Verzeichnis für die IP-Cores hinzugefügt
 #****************************************************************************************
 
-set proj_name "IhrProjektName"
-set root_dir {c:/Projects/RootFolderName}
+set proj_name "mvt-platform-te0820"
+set root_dir {/home/eliseev/Projects/mvt-platform-te0820}
 
 set proj_dir $root_dir/proj_dir
 set src_dir $root_dir/src
-set ip_dir $root_dir/ip
 set lib_dir $root_dir/lib
 set constr_dir $root_dir/constraints
 set sim_dir $root_dir/sim
@@ -51,10 +52,10 @@ puts "INFO: Project created: $proj_name"
 set obj [get_projects $proj_name]
 
 # Chip Modell:
-set_property "part" "xc7z020clg400-1" $obj
+set_property "part" "xczu3eg-sfvc784-1-e" $obj
 
 # Entwicklungsplatine (falls vorhanden)
-set_property "board_part" "em.avnet.com:microzed_7020:part0:1.0" $obj
+set_property "board_part" "trenz.biz:te0820_3eg_1e:part0:2.0" $obj
 
 # Restliche Scheiße:
 set_property "default_lib" "xil_defaultlib" $obj
@@ -68,6 +69,13 @@ if {[llength $file_list] != 0} {
 } else {
 	puts "$src_dir beinhaltet keine Dateien"
 }
+
+# Set IP repository paths
+set obj [get_filesets sources_1]
+set_property "ip_repo_paths" "[file normalize "$root_dir/ip_repo"]" $obj
+
+# Rebuild user ip_repo's index before adding any source files
+update_ip_catalog -rebuild
 
 # Kopieren der Simulationsdateien. Dateisatz 'sim_1' 
 set file_list [glob -nocomplain "$sim_dir/*"]
@@ -85,7 +93,7 @@ if {[llength $file_list] != 0} {
 }
 
 # Erzeugung des Block-Designs
-source $root_dir/bd.tcl
+source $root_dir/bd/bd.tcl
 
 # Generate the wrapper
 set design_name [get_bd_designs]
